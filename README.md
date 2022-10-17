@@ -10,4 +10,4 @@
 
 - [Азы Kotlin](/markdown/kotlin.md) - разбор языка Kotlin для начинающих
 - [Азы Python](/markdown/python.md) - разбор языка Python для начинающих
-- [Азы TypeScript](/markdown/typescript.md) - разбор языка TypeScript для начинающих
+- [Азы TypeScript](/markdown/typescript.md) - разбор языка TypeScript для начинающих (в разработке)
