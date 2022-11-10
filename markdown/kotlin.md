@@ -24,6 +24,16 @@
       - [Анонимные функции](#анонимные-функции)
       - [Лямбда-выражения](#лямбда-выражения)
       - [Переменное число аргументов](#переменное-число-аргументов)
+  - [ООП](#ооп)
+    - [Создание класса](#создание-класса)
+    - [Переопределение методов](#переопределение-методов)
+    - [Конструкторы](#конструкторы)
+    - [Перегрузка конструкторов](#перегрузка-конструкторов)
+    - [Инициализация](#инициализация)
+    - [Наследование](#наследование)
+    - [Абстрактные классы](#абстрактные-классы)
+    - [Интерфейсы](#интерфейсы)
+    - [Делегирование](#делегирование)
   - [Ссылки](#ссылки)
   - [Сноски](#сноски)
 
@@ -454,6 +464,353 @@ Hallo
 Salut
 Hola
 你好
+```
+
+## ООП
+
+### Создание класса
+
+Класс - это шаблон, по которому создаются объекты. Классы в Kotlin объявляются с помощью ключевого слова `class`.
+
+```kotlin
+class Person
+```
+
+Класс может иметь различные параметры в виде свойств, методов, полей и т.д.
+
+```kotlin
+class Person {
+    // поля
+    var name: String = ""
+    var age: Int = 0
+    
+    // свойство
+    val isAdult: Boolean
+        get() = age >= 18
+
+    // метод
+    fun greet() {
+        println("Hello, my name is $name")
+    }
+}
+```
+
+Свойства класса объявляются с помощью ключевого слова `var` или `val`.
+
+```kotlin
+var name: String = ""
+val age: Int = 0
+```
+
+Классы могут быть инициализированы с помощью конструктора.
+
+```kotlin
+class Person(name: String, age: Int) {
+    var name = name
+    var age = age
+    fun printInfo() {
+        println("Имя: $name, возраст: $age")
+    }
+}
+```
+
+`class Person(name: String, age: Int)` - это конструктор класса. Конструкторы могут иметь параметры, которые будут переданы при создании объекта.
+
+```kotlin
+val person = Person("John", 20)
+```
+
+### Переопределение методов
+
+Методы класса можно переопределить.
+
+```kotlin
+class Person(name: String, age: Int) {
+    var name = name
+    var age = age
+    fun printInfo() {
+        println("Имя: $name, возраст: $age")
+    }
+    override fun toString(): String {
+        return "Person(name='$name', age=$age)"
+    }
+}
+```
+
+Так же можно переопределить методы операторов.
+
+Вот пример переопределения `==` и `+`
+
+```kotlin
+class Person(name: String, age: Int) {
+    var name = name
+    var age = age
+    fun printInfo() {
+        println("Имя: $name, возраст: $age")
+    }
+    override fun toString(): String {
+        return "Person(name='$name', age=$age)"
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + age
+        return result
+    }
+
+    override fun equals(other: Person): Boolean {
+        return this.hashCode() == other.hashCode()
+    }
+
+    operator fun plus(other: Person): Person {
+        return Person(name + other.name, age + other.age)
+    }
+}
+
+fun main() {
+    val p1 = Person("Иван", 20)
+    val p2 = Person("Иван", 20)
+    println(p1 == p2) // true
+    println(p1 + p2) // Person(name='ИванИван', age=40)
+}
+```
+
+### Конструкторы
+
+Конструкторы класса объявляются с помощью ключевого слова `constructor`.
+
+```kotlin
+class Person constructor(name: String, age: Int) {
+    var name = name
+    var age = age
+    fun printInfo() {
+        println("Имя: $name, возраст: $age")
+    }
+}
+```
+
+Если ключевое слово `constructor` не используется, то можно опустить его.
+
+```kotlin
+class Person(name: String, age: Int) {
+    var name = name
+    var age = age
+    fun printInfo() {
+        println("Имя: $name, возраст: $age")
+    }
+}
+```
+
+Конструкторы могут иметь параметры по умолчанию, так же как и обычные функции или методы.
+
+```kotlin
+class Person(name: String, age: Int = 0) {
+    var name = name
+    var age = age
+    fun printInfo() {
+        println("Имя: $name, возраст: $age")
+    }
+}
+```
+
+
+### Перегрузка конструкторов
+
+Конструкторы можно перегружать.
+
+```kotlin
+class Person {
+    var name: String
+    var age: Int
+
+    constructor(name: String) {
+        this.name = name
+        this.age = 0
+    }
+
+    constructor(name: String, age: Int) {
+        this.name = name
+        this.age = age
+    }
+}
+```
+
+### Инициализация
+
+Класс может содержать блок инициализации. Блок инициализации выполняется сразу после создания объекта.
+
+```kotlin
+class Person {
+    var name: String
+    var age: Int
+
+    init {
+        name = "John"
+        age = 20
+    }
+}
+```
+
+### Наследование
+
+Классы могут наследовать друг друга с помощью ключевого слова `open`, обозначающего открытый класс, т.е. класс, который может быть наследован.
+
+```kotlin
+open class Person {
+    var name: String = ""
+    var age: Int = 0
+}
+
+class Student: Person() {
+    var university: String = ""
+}
+```
+
+Классы наследуются с помощью оператора `:`
+
+```kotlin
+class Student: Person()
+```
+
+Если класс наследуется от другого класса, то он может переопределить свойства и методы родительского класса.
+
+```kotlin
+open class Person {
+    var name: String = ""
+    var age: Int = 0
+}
+
+class Student: Person() {
+    var university: String = ""
+    override fun toString(): String {
+        return "Student(name='$name', age=$age, university='$university')"
+    }
+}
+
+fun main() {
+    val student = Student()
+    student.name = "Иван"
+    student.age = 20
+    student.university = "МГУ"
+    println(student)
+}
+```
+
+### Абстрактные классы
+
+Абстрактные классы могут содержать абстрактные методы, которые должны быть переопределены в наследнике.
+
+```kotlin
+abstract class Person {
+    var name: String = ""
+    var age: Int = 0
+    abstract fun printInfo()
+}
+
+class Student: Person() {
+    var university: String = ""
+    override fun printInfo() {
+        println("Имя: $name, возраст: $age, университет: $university")
+    }
+}
+
+fun main() {
+    val student = Student()
+    student.name = "Иван"
+    student.age = 20
+    student.university = "МГУ"
+    student.printInfo()
+}
+```
+
+### Интерфейсы
+
+Интерфейсы можно реализовать с помощью ключевого слова `interface`.
+
+```kotlin
+interface Person {
+    var name: String
+    var age: Int
+    fun printInfo()
+}
+
+class Student: Person {
+    override var name: String = ""
+    override var age: Int = 0
+    var university: String = ""
+    override fun printInfo() {
+        println("Имя: $name, возраст: $age, университет: $university")
+    }
+}
+
+fun main() {
+    val student = Student()
+    student.name = "Иван"
+    student.age = 20
+    student.university = "МГУ"
+    student.printInfo()
+}
+```
+
+Интерфейсы могут наследовать другие интерфейсы.
+
+```kotlin
+interface Person {
+    var name: String
+    var age: Int
+    fun printInfo()
+}
+
+interface Student: Person {
+    var university: String
+}
+
+class StudentImpl: Student {
+    override var name: String = ""
+    override var age: Int = 0
+    override var university: String = ""
+    override fun printInfo() {
+        println("Имя: $name, возраст: $age, университет: $university")
+    }
+}
+
+fun main() {
+    val student = StudentImpl()
+    student.name = "Иван"
+    student.age = 20
+    student.university = "МГУ"
+    student.printInfo()
+}
+```
+
+### Делегирование
+
+Делегирование позволяет реализовать интерфейс с помощью другого объекта.
+
+```kotlin
+interface Person {
+    var name: String
+    var age: Int
+    fun printInfo()
+}
+
+class StudentImpl: Person {
+    override var name: String = ""
+    override var age: Int = 0
+    override fun printInfo() {
+        println("Имя: $name, возраст: $age")
+    }
+}
+
+class Student(person: Person): Person by person
+
+fun main() {
+    val studentImpl = StudentImpl()
+    studentImpl.name = "Иван"
+    studentImpl.age = 20
+    val student = Student(studentImpl)
+    student.printInfo()
+}
 ```
 
 ## Ссылки
