@@ -9,6 +9,7 @@
 
 - [Введение в дектораторы в Python 3.x](/markdown/decorators.md) - описание языковых возможностей Python, позволяющих реализовывать декораторы функций и классов
 - [Создание своего Telegram бота на Python 3.x](/markdown/telegram-bot.md) - процесс создания бота с помощью библиотеки [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot/)
+- [Описание основных возможностей Qt для С++](/markdown/qt.md) - примеры использования Qt для создания GUI приложений на языке C++
 
 ## Изучение языков
 
