@@ -6,6 +6,7 @@
   - [Пример простейшего приложения](#пример-простейшего-приложения)
     - [Сборка и запуск приложения](#сборка-и-запуск-приложения)
   - [Приложение с формой входа в аккаунт](#приложение-с-формой-входа-в-аккаунт)
+  - [Приложение с кастомным главным окном](#приложение-с-кастомным-главным-окном)
 
 ## Что такое Qt и где это можно использовать?
 
@@ -121,11 +122,11 @@ int main(int argc, char *argv[])
 
     // Создаем объект вертикального контейнера, который будет содержать все элементы
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(loginLabel);      // Добавляем надпись "Login:"
-    layout->addWidget(loginEdit);       // Добавляем поле ввода логина
-    layout->addWidget(passwordLabel);   // Добавляем надпись "Password:"
-    layout->addWidget(passwordEdit);    // Добавляем поле ввода пароля
-    layout->addWidget(loginButton);     // Добавляем кнопку входа
+    layout->addWidget(loginLabel);        // Добавляем надпись "Login:"
+    layout->addWidget(loginEdit);         // Добавляем поле ввода логина
+    layout->addWidget(passwordLabel);     // Добавляем надпись "Password:"
+    layout->addWidget(passwordEdit);      // Добавляем поле ввода пароля
+    layout->addWidget(loginButton);       // Добавляем кнопку входа
     layout->addWidget(notificationLabel); // Добавляем надпись для уведомления
 
     // Создаем объект окна, который будет содержать вертикальный контейнер
@@ -170,4 +171,114 @@ notificationLabel->setAlignment(Qt::AlignCenter);
 
 ```cpp
 QVBoxLayout *layout = new QVBoxLayout();
+```
+
+## Приложение с кастомным главным окном
+
+Создадим приложение Qt с окном класса `QMainWindow`. Таким образом мы сможем контролировать события происходящие в окне и его конфигруацию. Рассмотрим пример:
+
+Для начала необходимо создать следующую структуру проекта:
+
+```yaml
+- <project>
+  - src
+    - main.cpp
+    - mainwindow.cpp
+    - mainwindow.h
+  - <project>.pro
+```
+
+Заголовочный файл нужен для того чтобы корректно работать с собственными слотами[^1] и событиями, а так же с родными для окна. В нем мы объявляем класс `MainWindow` и наследуем его от `QMainWindow`. Также объявляем слоты и сигналы, которые будут использоваться в нашем приложении.
+
+```cpp
+#ifndef MAINWINDOW_H // Защита от повторного подключения заголовочного файла
+#define MAINWINDOW_H
+
+#include <QMainWindow>
+
+class MainWindow : public QMainWindow // Наследуем класс от QMainWindow
+{
+    Q_OBJECT // Объявляем макрос Q_OBJECT для использования слотов и сигналов
+             // Он позволяет нам использовать ключевое слово signals и slots в нашем классе
+
+public:
+    MainWindow(QWidget *parent = nullptr); // Конструктор и деструктор
+    ~MainWindow();                         // класса
+
+private slots:
+    void onButtonClicked(); // Объявляем слот, который будет вызываться при нажатии на кнопку
+
+private:
+    QPushButton *button; // Объявляем указатель на кнопку
+};
+
+#endif // MAINWINDOW_H
+```
+
+Мы создали заголовочный файл где объявили класс `MainWindow` и создали поле для кнопки вместе со слотом нажатия на нее. Теперь необходимо реализовать[^2] этот класс в файле `mainwindow.cpp`. 
+
+```cpp
+#include "mainwindow.h" // Подключаем заголовочный файл с обявлением класса
+#include <QPushButton>  // Класс для создания кнопки
+#include <QMessageBox>  // Класс для вызова диалогового окна
+
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) // Конструктор класса
+{
+    button = new QPushButton("Click me!", this);                       // Создаем кнопку и передаем родителя
+    button->setGeometry(10, 10, 100, 30);                              // Задаем размеры кнопки
+    connect(button, SIGNAL(clicked()), this, SLOT(onButtonClicked())); // Устанавливаем соединение между сигналом нажатия на кнопку и слотом onButtonClicked()
+}
+
+MainWindow::~MainWindow() // Деструктор класса
+{
+    delete button; // Удаляем кнопку
+}
+
+void MainWindow::onButtonClicked() // Реализация слота
+{
+    QMessageBox::information(this, "Hello!", "Hello, World!"); // Выводим сообщение
+}
+```
+
+Строка `connect(button, SIGNAL(clicked()), this, SLOT(onButtonClicked()));` устанавливает соединение между сигналом нажатия на кнопку и слотом `onButtonClicked()`. Сигналы и слоты позволяют нам обрабатывать события в нашем приложении. В данном случае мы подключаем сигнал нажатия на кнопку к слоту `onButtonClicked()`. Теперь при нажатии на кнопку будет вызываться слот `onButtonClicked()`.
+
+Теперь необходимо создать файл `main.cpp` в котором будет находиться точка входа в программу.
+
+```cpp
+#include <QApplication> // Класс для создания приложения
+#include "mainwindow.h" // Подключаем заголовочный файл с обявлением класса
+
+int main(int argc, char *argv[]) // Точка входа в программу
+{
+    QApplication a(argc, argv); // Создаем приложение
+    MainWindow w;               // Создаем объект класса MainWindow
+    w.show();                   // Показываем окно
+    return a.exec();            // Запускаем приложение
+}
+```
+
+В данном случае мы создаем объект класса `MainWindow` и показываем его. Теперь необходимо создать файл `main.pro` в котором будет находиться информация о проекте.
+
+```js
+QT       += core gui
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+TARGET = main
+TEMPLATE = app
+
+SOURCES += \
+        main.cpp \
+        mainwindow.cpp
+
+HEADERS  += \
+        mainwindow.h
+```
+
+Теперь соберем проект и запустим его:
+
+```bash
+qmake main.pro
+make
+./main
 ```
